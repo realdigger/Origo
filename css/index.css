@@ -1,0 +1,59 @@
+
+/*	@ Bloc 2019										*/
+/*	@	SMF 2.0.x										*/
+
+/* global resets  */
+* { box-sizing: border-box; }
+*:focus { outline: none; }
+a { text-decoration: none; color: #40484f; }
+h1,h2,h3,h4,h5 { padding: 0; margin: 0; }
+h1 a,h2 a,h3 a,h4 a,h5 a { color: #60686d; text-decoration: none;}
+menu, nav, section, article, main, footer, header { margin: 0; padding: 0; }
+
+/* #####################################	*/
+/* SMF styles
+/* #####################################	*/
+
+.floatright { float: right;}
+.floatleft { float: left;}
+.flow_auto { overflow: auto;}
+.flow_hidden { overflow: hidden; clear: both; }
+.flow_hidden .windowbg, .flow_hidden .windowbg2 { margin-top: 2px;}
+.clear { clear: both;}
+.clear_left { clear: left;}
+.clear_right { clear: right;}
+.fullwidth { width: 100%; display: block; }
+.smalltext, tr.smalltext th { font-size: 0.8rem;	}
+.tinytext { font-size: 0.7rem;	}
+.middletext { font-size: 0.9rem;}
+.normaltext { font-size: 1rem;	}
+.largetext { font-size: 1.4rem;}
+.centertext { margin: 0 auto;	text-align: center;}
+.righttext { margin-left: auto;	margin-right: 0;	text-align: right;}
+.lefttext { margin-left: 0;	margin-right: auto;	text-align: left;}
+.double_height { line-height: 2rem;}
+ul.reset, ul.reset li { padding: 0;	margin: 0;	list-style: none;}
+
+.bbc_link:link, .bbc_link:visited { border-bottom: 1px solid #A8B6CF;}
+.bbc_link:hover { text-decoration: none;	border-bottom: 1px solid #346;}
+.bbc_size { line-height: 1.4em;}
+.bbc_color a { color: inherit;}
+.bbc_img { border: 0; max-width: 100%; }
+.bbc_table { font: inherit;	color: inherit;}
+.bbc_table td { font: inherit;	color: inherit;	vertical-align: top;}
+.bbc_u { text-decoration: underline;}
+.bbc_list { text-align: left;}
+.bbc_tt { font-family: "dejavu sans mono", "monaco", "lucida console", "courier new", monospace;}
+.help { cursor: help;}
+.meaction { color: red;}
+.highlight { font-weight: bold;	color: #ff7200 !important;	font-size: 1.1em;}
+.highlight2 { background-color: #D1E1EF;	color: #000 !important;}
+.error { color: red;}
+.alert { color: red;}
+.birthday { color: #920ac4;}
+.event { color: #078907;}
+.holiday { color: #000080;}
+.warn_mute { color: red;}
+.warn_moderate { color: #ffa500;}
+.warn_watch, .success { color: green;}
+

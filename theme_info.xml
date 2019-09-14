@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<theme-info xmlns="http://www.simplemachines.org/xml/theme-info" xmlns:smf="http://www.simplemachines.org/">
+	<id>bloc:origo</id>
+	<version>2.0.15</version>
+	<name>Origo</name>
+	<author name="Bloc">code@bjornhkristiansen.com</author>
+	<website>https://www.bhksite.info</website>
+	<layers>html,body</layers>
+	<templates>index</templates>
+	<based-on></based-on>
+</theme-info>
