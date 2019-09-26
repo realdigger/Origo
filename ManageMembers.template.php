@@ -10,6 +10,13 @@
  * @version 2.0
  */
 
+function template_init_admin()
+{
+	global $settings;
+		
+	$settings['is_admin_template']= true;
+}
+
 function template_search_members()
 {
 	global $context, $settings, $options, $scripturl, $txt;

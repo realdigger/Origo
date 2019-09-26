@@ -18,6 +18,15 @@ function template_init()
 	$settings['message_index_preview'] = false;
 	$settings['require_theme_strings'] = true;
 	$settings['show_member_bar'] = true;
+	$nonadmin = array( '',
+		'help','search','profile','pm','calendar','mlist','login','register','unread','unreadreplies','recent','stats','who',
+	);
+	if(!in_array($context['current_action'], $nonadmin))
+		$settings['is_admin_template'] = true;
+	else
+		$settings['is_admin_template'] = false;
+
+	$settings['tversion'] = '1.0';
 }
 
 function template_html_above()
@@ -28,8 +37,15 @@ function template_html_above()
 <!DOCTYPE html>
 <html', $context['right_to_left'] ? ' dir="rtl"' : '', '>
 <head>
-	<link rel="stylesheet" type="text/css" href="', $settings['theme_url'], '/css/index.css?v102" />
+	
+	<link href="https://fonts.googleapis.com/css?family=Libre+Franklin:500,500i,700,700i,900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="', $settings['theme_url'], '/css/index.css?v1" />';
+	
+	if($settings['is_admin_template'])
+		echo '
+	<link rel="stylesheet" type="text/css" href="', $settings['theme_url'], '/css/adm.css?v1" />';
 
+	echo '
 	<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/script.js?fin20"></script>
 	<script type="text/javascript" src="', $settings['theme_url'], '/scripts/theme.js?fin20"></script>
 	<script type="text/javascript"><!-- // --><![CDATA[
@@ -97,17 +113,33 @@ function template_body_above()
 	global $context, $settings, $options, $scripturl, $txt, $modSettings;
 
 	echo '
+<button id="menu_adm" class="ham mobile' , $context['user']['is_logged'] && !empty($context['user']['unread_messages']) ? ' pm' : '' , '" type="button" onclick="addclass2(\'menu_top\' , \'show\', \'menu_adm\', \'open\'); return false;">
+	<span></span><span></span><span></span>
+</button>
+
 <header id="header_top">
 	<h1><a href="', $scripturl, '">' , $context['forum_name'] , '</a></h1>
-	<menu id="header_menu" class="dropmenu">' , template_menu() , '</menu>
+	<menu id="menu_top" class="dropmenu">' , template_menu() , '</menu>
 </header>
 <nav id="nav_linktree">' , theme_linktree() , '</nav>
 
 <article id="article_content">
+	<button id="menu_user" class="toggle mobile" type="button" onclick="addclass3(\'section_user\' , \'show\', \'title_user\' , \'show\', \'menu_user\', \'open\'); return false;">
+		<span></span><span></span><span></span>
+	</button>';
+	if ($context['user']['is_logged'])
+		echo '
+	<strong class="mobile" id="title_user">', $txt['hello_member_ndt'], ' <span>', $context['user']['name'], '</span></strong>';
+	else
+		echo '
+	<strong class="mobile" id="title_user">', sprintf($txt['welcome_guest'], $txt['guest_title']), '</strong>';
+	
+	echo '
+	</h3>
 	<aside id="aside_content">
 		<section id="section_user">' , logic_user() , '</section>
 		' , function_exists('logic_aside') ? logic_aside() : '', '
-	<aside>
+	</aside>
 	<main id="main_content">';
 }
 
@@ -143,44 +175,61 @@ function logic_user()
 	if ($context['user']['is_logged'])
 	{
 		echo '
-			<div>';
+			<div id="div_user">';
 		
 		if (!empty($context['user']['avatar']))
 			echo '
 				<figure class="mavatar">
 					<img src="', $context['user']['avatar']['href'], '" alt="" />
-					<figcaption>', $context['user']['name'], '</figcaption>
 				</figure>';
 		else
 			echo '
 				<figure class="mavatar">
-					<figcaption>', $context['user']['name'], '</figcaption>
 				</figure>';
 			
 		echo '
-				<summary>', $txt['hello_member_ndt'], ' <span>', $context['user']['name'], '</span></summary>
-				<details>
-					<ul>
-						<li class="unr"><a href="', $scripturl, '?action=unread">', $txt['a_unread'], '</a></li>
-						<li class="rep"><a href="', $scripturl, '?action=unreadreplies">', $txt['a_replies'], '</a></li>';
+				<h2>', $txt['hello_member_ndt'], ' <span>', $context['user']['name'], '</span></h2>
+				<ul class="listie">
+					<li><a href="', $scripturl, '?action=unread">', $txt['a_unread'], '</a></li>
+					<li><a href="', $scripturl, '?action=unreadreplies">', $txt['a_replies'], '</a></li>
+					<li><a href="', $scripturl, '?action=profile;sa=showposts">', $txt['a_ownposts'], '</a></li>';
 
 		// Is the forum in maintenance mode?
 		if ($context['in_maintenance'] && $context['user']['is_admin'])
 			echo '
-						<li class="notice">', $txt['maintain_mode_on'], '</li>';
+					<li class="notice">', $txt['maintain_mode_on'], '</li>';
 
 		// Are there any members waiting for approval?
 		if (!empty($context['unapproved_members']))
 			echo '
-						<li class="unapp">', $context['unapproved_members'] == 1 ? $txt['approve_thereis'] : $txt['approve_thereare'], ' <a href="', $scripturl, '?action=admin;area=viewmembers;sa=browse;type=approve">', $context['unapproved_members'] == 1 ? $txt['approve_member'] : $context['unapproved_members'] . ' ' . $txt['approve_members'], '</a> ', $txt['approve_members_waiting'], '</li>';
+					<li class="unapp">', $context['unapproved_members'] == 1 ? $txt['approve_thereis'] : $txt['approve_thereare'], ' <a href="', $scripturl, '?action=admin;area=viewmembers;sa=browse;type=approve">', $context['unapproved_members'] == 1 ? $txt['approve_member'] : $context['unapproved_members'] . ' ' . $txt['approve_members'], '</a> ', $txt['approve_members_waiting'], '</li>';
 
 		if (!empty($context['open_mod_reports']) && $context['show_open_reports'])
 			echo '
-						<li class="openm"><a href="', $scripturl, '?action=moderate;area=reports">', sprintf($txt['mod_reports_waiting'], $context['open_mod_reports']), '</a></li>';
-
+					<li class="openm"><a href="', $scripturl, '?action=moderate;area=reports">', sprintf($txt['mod_reports_waiting'], $context['open_mod_reports']), '</a></li>';
+		
+		// for subtemplates to hook in
+		if(function_exists('add_usermenu'))
+		{
+			$links = add_usermenu();
+			foreach($links as $a => $menu)
+			{
+				if($menu['logged_in'])
+					echo '
+					<li><a href="', $menu['url'], '">', $menu['title'], '</a></li>';
+			}
+		}
+		
+		// for mods to hook in
+		if(function_exists('add_usermenu'))
+		{
+			$links = add_usermenu();
+			foreach($links as $a => $menu)
+				echo '
+					<li><a href="', $menu['url'], '">', $menu['title'], '</a></li>';
+		}
 		echo '
-					</ul>
-				</details>
+				</ul>
 			</div>';
 	}
 	// Otherwise they're a guest - this time ask them to either register or login - lazy bums...
@@ -189,27 +238,30 @@ function logic_user()
 		echo '
 				<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/sha1.js"></script>
 				<form id="guest_form" action="', $scripturl, '?action=login2" method="post" accept-charset="', $context['character_set'], '" ', empty($context['disable_login_hashing']) ? ' onsubmit="hashLoginPassword(this, \'' . $context['session_id'] . '\');"' : '', '>
-					<summary>', sprintf($txt['welcome_guest'], $txt['guest_title']), '</summary>
-					<details>
-						<input type="text" name="user" class="input_text" />
-						<input type="password" name="passwrd" class="input_text input_password" />
-						<select name="cookielength" class="input_select">
-							<option value="60">', $txt['one_hour'], '</option>
-							<option value="1440">', $txt['one_day'], '</option>
-							<option value="10080">', $txt['one_week'], '</option>
-							<option value="43200">', $txt['one_month'], '</option>
-							<option value="-1" selected="selected">', $txt['forever'], '</option>
-						</select>
-						<input type="submit" value="', $txt['login'], '" class="button_submit" />
-						<p class="info">', $txt['quick_login_dec'], '</p>';
+					
+					<fieldset>
+						<legend>', sprintf($txt['welcome_guest'], $txt['guest_title']), '</legend>
+						<div class="autogrid_form">
+							<input type="text" name="user" class="input_text" />
+							<input type="password" name="passwrd" class="input_text input_password" />
+							<select name="cookielength" class="input_select">
+								<option value="60">', $txt['one_hour'], '</option>
+								<option value="1440">', $txt['one_day'], '</option>
+								<option value="10080">', $txt['one_week'], '</option>
+								<option value="43200">', $txt['one_month'], '</option>
+								<option value="-1" selected="selected">', $txt['forever'], '</option>
+							</select>
+							<input type="submit" value="', $txt['login'], '" class="button_submit" />';
 
 		if (!empty($modSettings['enableOpenID']))
 			echo '
-						<p class="openid"><label>OpenID<input type="text" name="openid_identifier" id="openid_url" class="input_text openid_login" /></label></p>';
+							<p class="openid"><label>OpenID<input type="text" name="openid_identifier" id="openid_url" class="input_text openid_login" /></label></p>';
 
 		echo '
+						</div>
 						<input type="hidden" name="hash_passwrd" value="" /><input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
-					</details>
+					</fieldset>				
+					<p class="info">', $txt['quick_login_dec'], '</p>
 				</form>';
 	}
 }
@@ -250,7 +302,7 @@ function theme_linktree($force_show = false)
 	$shown_linktree = true;
 }
 
-function template_menu($mobil = false)
+function template_menu()
 {
 	global $context, $settings, $options, $scripturl, $txt;
 
@@ -259,6 +311,7 @@ function template_menu($mobil = false)
 
 	foreach ($context['menu_buttons'] as $act => $button)
 	{
+		$button['title'] = str_replace(array("[","]"),array("",""),$button['title']);
 		echo '
 					<li id="button_', $act, '">
 						<a class="', $button['active_button'] ? 'active ' : '', 'firstlevel" href="', $button['href'], '"', isset($button['target']) ? ' target="' . $button['target'] . '"' : '', '>

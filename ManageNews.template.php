@@ -21,9 +21,9 @@ function template_edit_news()
 			<table class="table_grid" width="100%">
 				<thead>
 					<tr class="catbg">
-						<th class="first_th" width="50%">', $txt['admin_edit_news'], '</th>
-						<th align="left" width="45%">', $txt['preview'], '</th>
-						<th class="last_th" align="center" width="5%"><input type="checkbox" class="input_check" onclick="invertAll(this, this.form);" /></th>
+						<th class="first_th" style="width: 50%;">', $txt['admin_edit_news'], '</th>
+						<th align="left" style="width: 45%;">', $txt['preview'], '</th>
+						<th class="last_th keep" style="text-align: center;  width: 5%;"><input type="checkbox" class="input_check" onclick="invertAll(this, this.form);" /></th>
 					</tr>
 				</thead>
 				<tbody>';
@@ -33,11 +33,14 @@ function template_edit_news()
 		echo '
 					<tr class="windowbg2">
 						<td align="center">
-
-							<div style="margin-bottom: 2ex;"><textarea rows="3" cols="65" name="news[]" style="' . ($context['browser']['is_ie8'] ? 'width: 635px; max-width: 85%; min-width: 85%' : 'width: 85%') . ';">', $admin_news['unparsed'], '</textarea></div>
-						</td><td align="left" valign="top">
-							<div style="overflow: auto; width: 100%; height: 10ex;">', $admin_news['parsed'], '</div>
-						</td><td align="center">
+							<div>
+								<textarea style="width: 100%; height: 8rem;" name="news[]">', $admin_news['unparsed'], '</textarea>
+							</div>
+						</td>
+						<td align="left" valign="top">
+							<div style="overflow: auto; width: 100%; height: 8rem;">', $admin_news['parsed'], '</div>
+						</td>
+						<td align="center" class="keep">
 							<input type="checkbox" name="remove[]" value="', $admin_news['id'], '" class="input_check" />
 						</td>
 					</tr>';
@@ -45,12 +48,12 @@ function template_edit_news()
 	// This provides an empty text box to add a news item to the site.
 	echo '
 					<tr id="moreNews" class="windowbg2" style="display: none;">
-						<td align="center">
+						<td>
 							<div id="moreNewsItems"></div>
 						</td>
-						<td align="center">
+						<td>
 						</td>
-						<td align="center">
+						<td>
 						</td>
 					</tr>
 				</tbody>
@@ -62,11 +65,11 @@ function template_edit_news()
 					function addNewsItem()
 					{
 						document.getElementById("moreNews").style.display = "";
-						setOuterHTML(document.getElementById("moreNewsItems"), \'<div style="margin-bottom: 2ex;"><textarea rows="3" cols="65" name="news[]" style="' . ($context['browser']['is_ie8'] ? 'width: 635px; max-width: 85%; min-width: 85%' : 'width: 85%') . ';"><\' + \'/textarea><\' + \'/div><div id="moreNewsItems"><\' + \'/div>\');
+						setOuterHTML(document.getElementById("moreNewsItems"), \'<div style="margin-bottom: 2ex;"><textarea name="news[]"><\' + \'/textarea><\' + \'/div><div id="moreNewsItems"><\' + \'/div>\');
 					}
 				// ]]></script>
 				<noscript>
-					<div style="margin-bottom: 2ex;"><textarea rows="3" cols="65" style="' . ($context['browser']['is_ie8'] ? 'width: 635px; max-width: 85%; min-width: 85%' : 'width: 85%') . ';" name="news[]"></textarea></div>
+					<div style="margin-bottom: 2ex;"><textarea rows="3" cols="65" name="news[]"></textarea></div>
 				</noscript>
 			</div>
 			<div class="floatrightpadding">
