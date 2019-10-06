@@ -1,32 +1,63 @@
 <?php
-/**
- * Simple Machines Forum (SMF)
- *
- * @package SMF
- * @author Simple Machines
- * @copyright 2011 Simple Machines
- * @license http://www.simplemachines.org/about/smf/license.php BSD
- *
- * @version 2.0
- */
 
-function template_main()
+/*	@	Origo theme									*/
+/*	@ Bloc 2019										*/
+/*	@	SMF 2.0.x										*/
+
+function logic_aside()
 {
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
 	// Let them know, if their report was a success!
 	if ($context['report_sent'])
+		echo '
+	<div class="information" id="profile_success">', $txt['report_sent'], '</div>';
+
+	// Does this topic have some events linked to it?
+	if (!empty($context['linked_calendar_events']))
 	{
 		echo '
-			<div class="windowbg" id="profile_success">
-				', $txt['report_sent'], '
-			</div>';
+	<h3>', $txt['calendar_linked_events'], '</h3>
+	<ul class="listie">';
+
+		foreach ($context['linked_calendar_events'] as $event)
+			echo '
+		<li>
+			', ($event['can_edit'] ? '<a class="floatright" href="' . $event['modify_href'] . '">' . $txt['modify'] . '</a> ' : ''), '<strong>', $event['title'], '</strong>: ', $event['start_date'], ($event['start_date'] != $event['end_date'] ? ' - ' . $event['end_date'] : ''), '
+		</li>';
+
+		echo '
+	</ul>';
 	}
+
+	if (!empty($settings['display_who_viewing']))
+	{
+		echo '
+	<p id="whoisviewing" class="information">';
+
+		// Show just numbers...?
+		if ($settings['display_who_viewing'] == 1)
+			echo count($context['view_members']), ' ', count($context['view_members']) == 1 ? $txt['who_member'] : $txt['members'];
+		// Or show the actual people viewing the topic?
+		else
+			echo empty($context['view_members_list']) ? '0 ' . $txt['members'] : implode(', ', $context['view_members_list']) . ((empty($context['view_num_hidden']) || $context['can_moderate_forum']) ? '' : ' (+ ' . $context['view_num_hidden'] . ' ' . $txt['hidden'] . ')');
+
+		// Now show how many guests are here too.
+		echo $txt['who_and'], $context['view_num_guests'], ' ', $context['view_num_guests'] == 1 ? $txt['guest'] : $txt['guests'], $txt['who_viewing_topic'], '
+	</p>';
+	}
+}
+
+function template_main()
+{
+	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
 	// Show the anchor for the top and for the first message. If the first message is new, say so.
 	echo '
-			<a id="top"></a>
-			<a id="msg', $context['first_message'], '"></a>', $context['first_new_message'] ? '<a id="new"></a>' : '';
+	<a id="top"></a>
+	<a id="msg', $context['first_message'], '"></a>', $context['first_new_message'] ? '<a id="new"></a>' : '' , '
+	<small class="floatright">', $txt['read'], ' ', $context['num_views'], ' ', $txt['times'], '</small>
+	<h3>', $context['subject'], '</h3>';
 
 	// Is this topic also a poll?
 	if ($context['is_poll'])
@@ -130,32 +161,6 @@ function template_main()
 			</div>';
 	}
 
-	// Does this topic have some events linked to it?
-	if (!empty($context['linked_calendar_events']))
-	{
-		echo '
-			<div class="linked_events">
-				<div class="title_bar">
-					<h3 class="titlebg headerpadding">', $txt['calendar_linked_events'], '</h3>
-				</div>
-				<div class="windowbg">
-					<span class="topslice"><span></span></span>
-					<div class="content">
-						<ul class="reset">';
-
-		foreach ($context['linked_calendar_events'] as $event)
-			echo '
-							<li>
-								', ($event['can_edit'] ? '<a href="' . $event['modify_href'] . '"> <img src="' . $settings['images_url'] . '/icons/modify_small.gif" alt="" title="' . $txt['modify'] . '" class="edit_event" /></a> ' : ''), '<strong>', $event['title'], '</strong>: ', $event['start_date'], ($event['start_date'] != $event['end_date'] ? ' - ' . $event['end_date'] : ''), '
-							</li>';
-
-		echo '
-						</ul>
-					</div>
-					<span class="botslice"><span></span></span>
-				</div>
-			</div>';
-	}
 
 	// Build the normal button array.
 	$normal_buttons = array(
@@ -177,33 +182,6 @@ function template_main()
 				<div class="pagelinks floatleft">', $txt['pages'], ': ', $context['page_index'], !empty($modSettings['topbottomEnable']) ? $context['menu_separator'] . ' &nbsp;&nbsp;<a href="#lastPost"><strong>' . $txt['go_down'] . '</strong></a>' : '', '</div>
 			</div>';
 
-	// Show the topic information - icon, subject, etc.
-	echo '
-			<div id="forumposts">
-				<div class="cat_bar">
-					<h3 class="catbg">
-						<img src="', $settings['images_url'], '/topic/', $context['class'], '.gif" align="bottom" alt="" />
-						<span id="author">', $txt['author'], '</span>
-						', $txt['topic'], ': ', $context['subject'], ' &nbsp;(', $txt['read'], ' ', $context['num_views'], ' ', $txt['times'], ')
-					</h3>
-				</div>';
-
-	if (!empty($settings['display_who_viewing']))
-	{
-		echo '
-				<p id="whoisviewing" class="smalltext">';
-
-		// Show just numbers...?
-		if ($settings['display_who_viewing'] == 1)
-				echo count($context['view_members']), ' ', count($context['view_members']) == 1 ? $txt['who_member'] : $txt['members'];
-		// Or show the actual people viewing the topic?
-		else
-			echo empty($context['view_members_list']) ? '0 ' . $txt['members'] : implode(', ', $context['view_members_list']) . ((empty($context['view_num_hidden']) || $context['can_moderate_forum']) ? '' : ' (+ ' . $context['view_num_hidden'] . ' ' . $txt['hidden'] . ')');
-
-		// Now show how many guests are here too.
-		echo $txt['who_and'], $context['view_num_guests'], ' ', $context['view_num_guests'] == 1 ? $txt['guest'] : $txt['guests'], $txt['who_viewing_topic'], '
-				</p>';
-	}
 
 	echo '
 				<form action="', $scripturl, '?action=quickmod2;topic=', $context['current_topic'], '.', $context['start'], '" method="post" accept-charset="', $context['character_set'], '" name="quickModForm" id="quickModForm" style="margin: 0;" onsubmit="return oQuickModify.bInEditMode ? oQuickModify.modifySave(\'' . $context['session_id'] . '\', \'' . $context['session_var'] . '\') : false">';

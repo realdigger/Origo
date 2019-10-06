@@ -9,6 +9,13 @@ function logic_aside()
 	show_slider();
 }
 
+/*
+function add_user_menu()
+{
+	return; 
+}
+*/
+
 function show_slider()
 {
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
@@ -108,22 +115,22 @@ function template_main()
 
 				echo '
 
-					<p class="description">', $board['description'] , '</p>';
+					<p class="description purify">', $board['description'] , '</p>';
 
 				// Show the "Moderators: ". Each has name, href, link, and id. (but we're gonna use link_moderators.)
 				if (!empty($board['moderators']))
 					echo '
-					<p class="moderators">', count($board['moderators']) == 1 ? $txt['moderator'] : $txt['moderators'], ': ', implode(', ', $board['link_moderators']), '</p>';
+					<p class="moderators simplify">', count($board['moderators']) == 1 ? $txt['moderator'] : $txt['moderators'], ': ', implode(', ', $board['link_moderators']), '</p>';
 
 				// Show some basic information about the number of posts, etc.
 					echo '
 				</li>
-				<li class="stats">
+				<li class="stats simplify">
 					<p>', comma_format($board['posts']), ' ', $board['is_redirect'] ? $txt['redirects'] : $txt['posts'], ' |
 						', $board['is_redirect'] ? '' : comma_format($board['topics']) . ' ' . $txt['board_topics'], '
 					</p>
 				</li>
-				<li class="lastpost">';
+				<li class="lastpost simplify">';
 
 				/* The board's and children's 'last_post's have:
 				time, timestamp (a number that represents the time.), id (of the post), topic (topic id.),
@@ -137,7 +144,7 @@ function template_main()
 					</p>';
 				echo '
 				</li>
-				<li class="children' , empty($board['children']) ? ' empty' : '' , '">';
+				<li class="children' , empty($board['children']) ? ' empty' : '' , ' purify">';
 				// Show the "Child Boards: ". (there's a link_children but we're going to bold the new ones...)
 				if (!empty($board['children']))
 				{
@@ -226,7 +233,7 @@ function template_info_center()
 			foreach ($context['latest_posts'] as $post)
 				echo '
 					<li><strong>', $post['link'], '</strong>
-						<ul>
+						<ul class="simplify">
 							<li>', $txt['by'] , ' ' , $post['poster']['link'], '</li>
 							<li>', $txt['in'] , ' ' , $post['board']['link'], '</li>
 							<li>', $txt['on'] , ' ' , $post['time'], '</li>
