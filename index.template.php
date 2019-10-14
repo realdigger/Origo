@@ -6,7 +6,7 @@
 
 function template_init()
 {
-	global $context, $settings, $options, $txt;
+	global $context, $settings, $options, $txt, $style_sheets;
 
 	$settings['use_default_images'] = 'never';
 	$settings['doctype'] = 'xhtml';
@@ -105,7 +105,7 @@ function template_html_above()
 	
 	echo '
 </head>
-<body>';
+<body class="origo' , !empty($options['simplify']) ? ' simple_all' : '' , !empty($options['purify']) ? ' simple_pure' : '' ,'" id="origobody">';
 }
 
 function template_body_above()
@@ -138,6 +138,7 @@ function template_body_above()
 	</h3>
 	<aside id="aside_content">
 		<section id="section_user">' , logic_user() , '</section>
+		' , function_exists('logic_aside_pre') ? logic_aside_pre() : '', '
 		' , function_exists('logic_aside') ? logic_aside() : '', '
 	</aside>
 	<main id="main_content">';
@@ -180,19 +181,27 @@ function logic_user()
 		if (!empty($context['user']['avatar']))
 			echo '
 				<figure class="mavatar">
-					<img src="', $context['user']['avatar']['href'], '" alt="" />
+					<a href="' , $scripturl , '?action=profile"><img src="', $context['user']['avatar']['href'], '" alt="" /></a>
 				</figure>';
 		else
 			echo '
-				<figure class="mavatar">
-				</figure>';
+				<figure class="mavatar"></figure>';
 			
 		echo '
 				<h2>', $txt['hello_member_ndt'], ' <span>', $context['user']['name'], '</span></h2>
 				<ul class="listie">
 					<li><a href="', $scripturl, '?action=unread">', $txt['a_unread'], '</a></li>
 					<li><a href="', $scripturl, '?action=unreadreplies">', $txt['a_replies'], '</a></li>
-					<li><a href="', $scripturl, '?action=profile;sa=showposts">', $txt['a_ownposts'], '</a></li>';
+					<li><a href="', $scripturl, '?action=profile;area=showposts">', $txt['a_ownposts'], '</a></li>
+					<li>
+						<a id="a_simplify" href="#" onclick="addclass2(\'origobody\',\'simple_all\',\'a_simplify\',\'on\'); return false;"' , !empty($options['simplify']) ? ' class="on"' : '' ,'>' , $txt['origo_extend'] , '</a>
+						( <a href="' , $scripturl , '?action=profile;area=theme#a_extend">' , $txt['switch'] , '</a> )
+					</li>
+					<li>
+						<a id="a_purify" href="#" onclick="addclass2(\'origobody\',\'simple_pure\',\'a_purify\',\'on\'); return false;"' , !empty($options['purify']) ? ' class="on"' : '' ,'>' , $txt['origo_extend2'], '</a>
+						( <a href="' , $scripturl , '?action=profile;area=theme#a_extend2">' , $txt['switch'] , '</a> )
+					</li>
+					';
 
 		// Is the forum in maintenance mode?
 		if ($context['in_maintenance'] && $context['user']['is_admin'])
@@ -220,14 +229,6 @@ function logic_user()
 			}
 		}
 		
-		// for mods to hook in
-		if(function_exists('add_usermenu'))
-		{
-			$links = add_usermenu();
-			foreach($links as $a => $menu)
-				echo '
-					<li><a href="', $menu['url'], '">', $menu['title'], '</a></li>';
-		}
 		echo '
 				</ul>
 			</div>';
@@ -262,6 +263,11 @@ function logic_user()
 						<input type="hidden" name="hash_passwrd" value="" /><input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
 					</fieldset>				
 					<p class="info">', $txt['quick_login_dec'], '</p>
+					<ul class="listie">
+							<li><a href="', $scripturl, '?action=recent">', $txt['a_recent'], '</a></li>
+							<li><a id="a_simplify" href="#" onclick="addclass2(\'origobody\',\'simple_all\',\'a_simplify\',\'on\'); return false;">' , $txt['origo_extend'] , '</a></li>
+							<li><a id="a_purify" href="#" onclick="addclass2(\'origobody\',\'simple_pure\',\'a_purify\',\'on\'); return false;">' , $txt['origo_extend2'] , '</a></li>
+					</ul>
 				</form>';
 	}
 }
@@ -370,6 +376,25 @@ function template_button_strip($button_strip, $direction = 'top', $strip_options
 	// List the buttons in reverse order for RTL languages.
 	if ($context['right_to_left'])
 		$button_strip = array_reverse($button_strip, true);
+
+	// test it
+	$set = false;
+	foreach ($button_strip as $key => $value)
+	{
+		if(isset($value['active']))
+			$set = true;
+	}
+	if(!$set)
+	{
+		$first = true;
+		foreach ($button_strip as $key => $value)
+		{
+			if($first)
+				$button_strip[$key]['active'] = true;
+			$first = false;
+		}
+	}
+
 
 	// Create the buttons...
 	$buttons = array();

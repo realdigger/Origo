@@ -29,3 +29,8 @@ function addclass3(id, toggleclass, id2, toggleclass2,id3, toggleclass3)
 	element2.classList.toggle(toggleclass2);	
 	element3.classList.toggle(toggleclass3);	
 }
+
+
+
+
+

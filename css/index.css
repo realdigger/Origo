@@ -72,7 +72,7 @@ summary { display: list-item;}
 a { text-decoration: none; color: #40484f; }
 h1,h2,h3,h4,h5 { padding: 0; margin: 0; padding: 0.5em 0 1em 0; }
 h1 a,h2 a,h3 a,h4 a,h5 a { color: #60686d; text-decoration: none;}
-menu, nav, section, article, main, footer, header { margin: 0; padding: 0; }
+menu, nav, section, article, main, footer, header, figure { margin: 0; padding: 0; }
 
 
 /* #####################################	*/
